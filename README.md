@@ -1,6 +1,7 @@
 # Advanced Discord Gallery Bot
 ## Disclaimer
 * This project was totally coded on Repl.it
+* Requirements: see package.json for dependencies
 * If you're using a different host you may want to change the error handler and other settings within the project
 
 ## Features
