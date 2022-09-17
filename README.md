@@ -24,3 +24,5 @@
 
 * With Link or Embed<br/>
 ![Embed Post](https://cdn.discordapp.com/attachments/1019071708029792277/1019561967305891850/Screenshot_2022-09-14_162252.png)
+
+Lastly, you're free to use, share, and modify this project, as long as you give proper credits to the developer!
