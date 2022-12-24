@@ -1,5 +1,7 @@
-const { SlashCommandBuilder } = require('@discordjs/builders'),
-{ ChannelType } = require('discord.js');
+const {
+  ChannelType,
+  SlashCommandBuilder
+} = require('discord.js');
 
 module.exports = new SlashCommandBuilder()
 .setName('mediaonly')
