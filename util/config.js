@@ -1,37 +1,23 @@
 const { ActivityType } = require('discord.js'),
 onboot = require('./onboot'),
-{
-  noEmbeds,
-  noAttachments
-} = require('./message');
+{ noEmbeds, noAttachments } = require('./message'),
+url = (link) => new RegExp(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/).test(link);
 
 module.exports = {
-  update: false,
-  dev: process.env.dev,
+  dev: process.env.dev || '858551569263755284',
   auth: process.env.token,
-  tick: '<:check_mark:988095400290451467>',
-  cross: '<:cross_mark:988096131714121749>',
+  tick: '✅',
+  url: url,
+  cross: '❌',
   onboot: onboot,
   noEmbeds: noEmbeds,
   noAttachments: noAttachments,
-  activities: [
-    {
-      activities: [{
-        name: 'The Gallery',
-        type: ActivityType.Watching
-      }], status: 'idle'
-    },
-    {
-      activities: [{
-        name: 'spectral.host',
-        type: ActivityType.Listening
-      }], status: 'idle'
-    },
-    {
-      activities: [{
-        name: '/help',
-        type: ActivityType.Listening
-      }], status: 'online'
-    }
-  ]
+  activity: {
+    afk: false,
+    status: 'idle',
+    activities: [{
+      name: 'The Gallery',
+      type: ActivityType.Watching
+    }]
+  }
 }
