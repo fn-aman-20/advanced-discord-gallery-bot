@@ -1,8 +1,10 @@
 require('colors').enable();
 const { exec } = require('child_process'),
+{ EventEmitter } = require('events'),
+check = new EventEmitter(),
 time = () => {
   const a = new Date(),
-  b = new Date(a.getTime() + (330 /* replace this with your local time in minutes */ + a.getTimezoneOffset()) * 60 * 1000),
+  b = new Date(a.getTime() + (330 /* replace this with your timezone offset in minutes e.g. GMT+5:30 => 330 */ + a.getTimezoneOffset()) * 60 * 1000),
   hours = (b.getHours() >= 10) ? `${b.getHours()}` : `0${b.getHours()}`,
   minutes = (b.getMinutes() >= 10) ? `${b.getMinutes()}` : `0${b.getMinutes()}`,
   seconds = (b.getSeconds() >= 10) ? `${b.getSeconds()}` : `0${b.getSeconds()}`;
@@ -36,9 +38,13 @@ module.exports = function onboot(client, token) {
   });
   
   client.login(token);
-  setTimeout(() => {
-    if (!client.isReady()) exec('kill 1');
-  }, 5_000); // kill the process if the client isn't ready in 5 seconds
+  check.on('login', () => {
+    setTimeout(() => {
+      if (!client.isReady()) exec('kill 1');
+      else check.emit('login');
+    }, 5_000);
+  });
+  check.emit('login');
   
   process.on('unhandledRejection', (reason, p) => {
     console.log(`\n[${time()}] :: Unhandled Rejection`.red);
