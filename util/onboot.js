@@ -1,6 +1,7 @@
 require('colors').enable();
 const process = require('process'),
 { EventEmitter } = require('events'),
+{ spawn } = require('child_process'),
 check = new EventEmitter(),
 time = () => {
   const a = new Date(),
@@ -11,7 +12,13 @@ time = () => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
-// Warning: 'process.kill(process.pid)' kills the process and waits for your system to autoboot on it's own, if your system doesn't restart itself after crash you shall remove these statements from this file
+// Warning: please read https://github.com/fn-aman-20/discord-anticrash#readme
+process.on('exit', () => {
+  spawn(process.argv.shift(), process.argv, {
+    detached: true,
+    stdio: 'inherit'
+  });
+});
 
 module.exports = function onboot(client, token) {
   client.once('shardReady', (id, na) => {
@@ -44,7 +51,7 @@ module.exports = function onboot(client, token) {
     setTimeout(() => {
       if (!client.isReady()) process.kill(process.pid);
       else check.emit('login');
-    }, 5_000);
+    }, 60_000);
   });
   check.emit('login');
   
