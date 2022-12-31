@@ -12,7 +12,7 @@ time = () => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
-// Do this only if you know about it
+// do this only if you know about it
 // if you use replit, consider using exec('kill 1') and freshping instead
 // please read https://github.com/fn-aman-20/discord-anticrash#readme
 /*
