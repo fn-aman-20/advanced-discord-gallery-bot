@@ -12,13 +12,17 @@ time = () => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
-// Warning: please read https://github.com/fn-aman-20/discord-anticrash#readme
+// Do this only if you know about it
+// if you use replit, consider using exec('kill 1') and freshping instead
+// please read https://github.com/fn-aman-20/discord-anticrash#readme
+/*
 process.on('exit', () => {
   spawn(process.argv.shift(), process.argv, {
     detached: true,
-    stdio: 'inherit'
+    stdio: 'inherit' // inherit, ignore
   });
 });
+*/
 
 module.exports = function onboot(client, token) {
   client.once('shardReady', (id, na) => {
@@ -26,32 +30,32 @@ module.exports = function onboot(client, token) {
     if (na) console.log('  unavailable Guild', na);
   });
   client.on('shardDisconnect', (event, id) => {
-    if (!client.isReady()) process.kill(process.pid);
+    if (!client.isReady()) process.exit(1); // 1 => exit with an error, 0 => without an error
     else console.log(`[${time()}] :: disconnected :: [shard#${id}]`.yellow);
   });
   client.on('shardResume', (id, no) => {
-    if (!client.isReady()) process.kill(process.pid);
+    if (!client.isReady()) process.exit(1);
     else console.log(`[${time()}] :: reconnected ${no > 1 ? 'after' : 'in'} ${no} attempt${no > 1 ? 's' : ''} :: [shard#${id}]`.blue);
   });
   client.on('shardError', (error, id) => {
-    if (!client.isReady()) process.kill(process.pid);
+    if (!client.isReady()) process.exit(1);
     else console.log(`[${time()}] :: error connecting :: [shard#${id}]\n`.red, error);
   });
   client.on('warn', warning => {
-    if (!client.isReady()) process.kill(process.pid);
+    if (!client.isReady()) process.exit(1);
     else console.log(`[${time()}] :: warning :: [client]\n`.yellow, warning);
   });
   client.on('error', error => {
-    if (!client.isReady()) process.kill(process.pid);
+    if (!client.isReady()) process.exit(1);
     else console.log(`[${time()}] :: error :: [client]\n`.red, error);
   });
   
   client.login(token);
   check.on('login', () => {
     setTimeout(() => {
-      if (!client.isReady()) process.kill(process.pid);
+      if (!client.isReady()) process.exit(1);
       else check.emit('login');
-    }, 60_000);
+    }, 60_000); // few vps have a auto-boot cooldown of 60s after crashing
   });
   check.emit('login');
   
