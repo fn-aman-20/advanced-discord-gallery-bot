@@ -1,8 +1,8 @@
 require('colors').enable();
 const process = require('process'),
-{ EventEmitter } = require('events'),
-// { exec, spawn } = require('child_process'),
-check = new EventEmitter(),
+{ EventEmitter } = require('events');
+
+const check = new EventEmitter(),
 time = () => {
   const a = new Date(),
   b = new Date(a.getTime() + (330 /* replace this with your timezone offset in minutes e.g. GMT+5:30 => 330 */ + a.getTimezoneOffset()) * 60 * 1000),
@@ -10,18 +10,8 @@ time = () => {
   minutes = (b.getMinutes() >= 10) ? `${b.getMinutes()}` : `0${b.getMinutes()}`,
   seconds = (b.getSeconds() >= 10) ? `${b.getSeconds()}` : `0${b.getSeconds()}`;
   return `${hours}:${minutes}:${seconds}`;
-};
-
-// Do this only if you know about it
-// if you use replit, consider using exec('kill 1') and freshping.io instead
-/*
-process.on('exit', () => {
-  spawn(process.argv.shift(), process.argv, {
-    detached: true,
-    stdio: 'inherit' // inherit, ignore
-  });
-});
-*/
+},
+kill = () => process.kill(1) || process.kill(process.pid);
 
 module.exports = function onboot(client, token) {
   client.once('shardReady', (id, na) => {
@@ -29,32 +19,29 @@ module.exports = function onboot(client, token) {
     if (na) console.log('  unavailable Guild', na);
   });
   client.on('shardDisconnect', (event, id) => {
-    if (!client.isReady()) process.exit(1); // 1 => exit with an error, 0 => without an error
+    if (!client.isReady()) kill();
     else console.log(`[${time()}] :: disconnected :: [shard#${id}]`.yellow);
   });
   client.on('shardResume', (id, no) => {
-    if (!client.isReady()) process.exit(1);
+    if (!client.isReady()) kill();
     else console.log(`[${time()}] :: reconnected ${no > 1 ? 'after' : 'in'} ${no} attempt${no > 1 ? 's' : ''} :: [shard#${id}]`.blue);
   });
   client.on('shardError', (error, id) => {
-    if (!client.isReady()) process.exit(1);
+    if (!client.isReady()) kill();
     else console.log(`[${time()}] :: error connecting :: [shard#${id}]\n`.red, error);
   });
   client.on('warn', warning => {
-    if (!client.isReady()) process.exit(1);
+    if (!client.isReady()) kill();
     else console.log(`[${time()}] :: warning :: [client]\n`.yellow, warning);
   });
   client.on('error', error => {
-    if (!client.isReady()) process.exit(1);
+    if (!client.isReady()) kill();
     else console.log(`[${time()}] :: error :: [client]\n`.red, error);
   });
   
   client.login(token);
   check.on('login', () => {
-    setTimeout(() => {
-      if (!client.isReady()) process.exit(1);
-      else check.emit('login');
-    }, 60_000); // few vps have a auto-boot cooldown of 60s after crashing
+    setTimeout(() => client.isReady() ? check.emit('login') : kill(), 15_000);
   });
   check.emit('login');
   
