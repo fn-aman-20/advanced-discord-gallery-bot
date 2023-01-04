@@ -12,6 +12,9 @@ time = () => {
   return `${hours}:${minutes}:${seconds}`;
 },
 kill = () => process.kill(1) || process.kill(process.pid);
+/*
+Note: the 'kill()' thing is only recommended if your vps reboots or falls into ratelimits or ip ban only, else if your vps is reliable, remove these unused items, just keep the console logs
+*/
 
 module.exports = function onboot(client, token) {
   client.once('shardReady', (id, na) => {
